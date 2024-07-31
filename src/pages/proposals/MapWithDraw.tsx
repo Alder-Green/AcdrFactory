@@ -4,7 +4,7 @@ import L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
-import Button from '@/components/ui/button'; // Ensure this import is correct based on your project structure
+import Button from '@/components/ui/button'; // Assurez-vous que ce chemin est correct
 
 interface MapWithDrawProps {
   onGeojsonChange: (geojson: string) => void;
@@ -79,7 +79,7 @@ const MapWithDraw: React.FC<MapWithDrawProps> = ({ onGeojsonChange, onSave }) =>
           }
         },
         () => {
-          console.error('Unable to retrieve location.');
+          console.error('Impossible de récupérer la localisation.');
         }
       );
     }
@@ -89,7 +89,7 @@ const MapWithDraw: React.FC<MapWithDrawProps> = ({ onGeojsonChange, onSave }) =>
     <div>
       <div ref={mapRef} style={{ height: '300px', width: '100%' }} />
       <Button shape="rounded" onClick={onSave} className="bg-button-green mt-4">
-        Save
+        Sauvegarder
       </Button>
     </div>
   );
