@@ -1,13 +1,10 @@
 name: CD ACDR Factory
 
 on:
-  push:
-    branches:
-      - main
-  pull_request:
-    branches:
-      - main
-  workflow_dispatch:
+  workflow_run:
+    workflows: ["CI ACDR Factory"]
+    types:
+      - completed
 
 jobs:
   deploy-to-azure:

@@ -1,4 +1,4 @@
-name: CI Alder Factory
+name: CI ACDR Factory
 
 on:
   push:
