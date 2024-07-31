@@ -43,7 +43,7 @@ const HomePage: NextPageWithLayout<
               size="lg"
             />
             <h3 className="mb-2 text-center text-sm uppercase tracking-wider text-gray-500 dark:text-gray-400 3xl:mb-3">
-              Rania changes
+              Rania changes 2
             </h3>
             <div className="mb-7 text-center font-medium tracking-tighter text-gray-900 dark:text-white xl:text-2xl 3xl:mb-8 3xl:text-[32px]">
               $10,86,000
