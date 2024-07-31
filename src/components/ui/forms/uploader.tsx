@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { useDropzone } from 'react-dropzone';
 import Button from '@/components/ui/button';
 
-
 function Uploader() {
   const [files, setFiles] = useState([]);
   const { getRootProps, getInputProps } = useDropzone({
@@ -20,7 +19,6 @@ function Uploader() {
     },
   });
 
-
   const thumbs = files.map((file: any) => (
     <div key={file.name} className="h-full w-full">
       <img
@@ -31,15 +29,12 @@ function Uploader() {
     </div>
   ));
 
-
   useEffect(() => {
     // Make sure to revoke the data uris to avoid memory leaks
     files.forEach((file: any) => URL.revokeObjectURL(file.preview));
   }, [files]);
 
-
   console.log(files);
-
 
   return (
     <div className="rounded-lg border border-solid border-gray-200 bg-white p-4 dark:border-gray-700 dark:bg-light-dark sm:p-6">

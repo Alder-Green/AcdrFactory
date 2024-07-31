@@ -1,7 +1,10 @@
+// src/context.tsx
 import { atom, useAtom } from 'jotai';
 
 export type DRAWER_VIEW = 'DASHBOARD_SIDEBAR' | 'DRAWER_MENU' | 'DRAWER_SEARCH';
 const drawerAtom = atom({ isOpen: false, view: 'DASHBOARD_SIDEBAR' });
+
+export const roleAtom = atom<string | null>(null);
 
 export function useDrawer() {
   const [state, setState] = useAtom(drawerAtom);
@@ -12,5 +15,13 @@ export function useDrawer() {
     ...state,
     openDrawer,
     closeDrawer,
+  };
+}
+
+export function useRole() {
+  const [role, setRole] = useAtom(roleAtom);
+  return {
+    role,
+    setRole,
   };
 }

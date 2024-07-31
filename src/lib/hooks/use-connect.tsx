@@ -1,6 +1,7 @@
-import { useEffect, useState, createContext, ReactNode } from 'react';
+import React, { useEffect, useState, createContext, ReactNode } from 'react';
 import Web3Modal from 'web3modal';
 import { ethers } from 'ethers';
+import AlderABI from './AlderABI.json';
 
 const web3modalStorageKey = 'WEB3_CONNECT_CACHED_PROVIDER';
 
@@ -11,15 +12,16 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
   const [balance, setBalance] = useState<string | undefined>(undefined);
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<boolean>(false);
+  const [contract, setContract] = useState<any>(null);
   const web3Modal =
     typeof window !== 'undefined' && new Web3Modal({ cacheProvider: true });
 
-  /* This effect will fetch wallet address if user has already connected his/her wallet */
+  const contractAddress = "0x9d00cc16e02ce6D8c708F537D010A48Ef633C670";
+
   useEffect(() => {
     async function checkConnection() {
       try {
         if (window && window.ethereum) {
-          // Check if web3modal wallet connection is available on storage
           if (localStorage.getItem(web3modalStorageKey)) {
             await connectToWallet();
           }
@@ -31,7 +33,6 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
       }
     }
     checkConnection();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const setWalletAddress = async (provider: any) => {
@@ -43,9 +44,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
         getBalance(provider, web3Address);
       }
     } catch (error) {
-      console.log(
-        'Account not connected; logged from setWalletAddress function'
-      );
+      console.log('Account not connected; logged from setWalletAddress function');
     }
   };
 
@@ -70,6 +69,12 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
     }
   };
 
+  const getContract = async (connection: any) => {
+    const provider = new ethers.providers.Web3Provider(connection);
+    const signer = provider.getSigner();
+    return new ethers.Contract(contractAddress, AlderABI, signer);
+  };
+
   const connectToWallet = async () => {
     try {
       setLoading(true);
@@ -79,13 +84,13 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
       await subscribeProvider(connection);
 
       setWalletAddress(provider);
+      const contractInstance = await getContract(provider);
+      setContract(contractInstance);
+
       setLoading(false);
     } catch (error) {
       setLoading(false);
-      console.log(
-        error,
-        'got this error on connectToWallet catch block while connecting the wallet'
-      );
+      console.log(error, 'got this error on connectToWallet catch block while connecting the wallet');
     }
   };
 
@@ -98,6 +103,8 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
         setAddress(accounts[0]);
         const provider = new ethers.providers.Web3Provider(connection);
         getBalance(provider, accounts[0]);
+        const contractInstance = await getContract(provider);
+        setContract(contractInstance);
       } else {
         disconnectWallet();
       }
@@ -113,6 +120,7 @@ export const WalletProvider = ({ children }: { children: ReactNode }) => {
         error,
         connectToWallet,
         disconnectWallet,
+        contract,
       }}
     >
       {children}

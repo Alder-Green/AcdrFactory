@@ -12,13 +12,13 @@ import Avatar7 from '@/assets/images/avatar/7.png';
 
 export const nftData = {
   isAuction: true,
-  name: 'Flow Punk Gallery #303',
+  name: 'Olive Field Beja',
   image: SingleNft,
   minted_date: 'Jan 26, 2022',
   minted_slug: 'https://etherscan.io/',
   price: 0.2,
   description:
-    'Fisherian Runaways, Child of #48 Bat Veil & #42 Screw Nose. This mushroom is the result of the cross-breeding of two original one of a kind generative mushrooms donated back to the Fisherian Runaways project their generous owner.',
+    'Olive Field in Beja, Tunisia, with 120 Hectares',
   creator: { id: 1, logo: Avatar1, name: '@Cameronwilliamson', slug: '#' },
   collection: { id: 1, logo: Avatar3, name: 'Criptic', slug: '#' },
   owner: { id: 1, logo: Avatar4, name: '@williamson', slug: '#' },

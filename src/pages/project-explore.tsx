@@ -71,8 +71,6 @@ function GridSwitcher() {
 const sort = [
   { id: 1, name: 'Date Listed: Newest' },
   { id: 2, name: 'Date Listed: Oldest' },
-  { id: 3, name: 'Ending: Soonest' },
-  { id: 4, name: 'Ending: Latest' },
 ];
 
 function SortList() {

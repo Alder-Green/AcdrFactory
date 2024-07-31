@@ -16,17 +16,14 @@ export default function ProfileTab() {
     <ParamTab
       tabMenu={[
         {
-          title: 'Collection',
+          title: 'Project',
           path: 'collection',
         },
         {
-          title: 'Portfolio',
-          path: 'portfolio',
+          title: 'MRV reports ',
+          path: 'collection',
         },
-        {
-          title: 'History',
-          path: 'history',
-        },
+    
       ]}
     >
       <TabPanel className="focus:outline-none">
