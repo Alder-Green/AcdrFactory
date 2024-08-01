@@ -4,9 +4,23 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'package.json'
+      - 'next.config.js'
+      - 'tsconfig.json'
+      - 'yarn.lock'
   pull_request:
     branches:
       - main
+    paths:
+      - 'src/**'
+      - 'public/**'
+      - 'package.json'
+      - 'next.config.js'
+      - 'tsconfig.json'
+      - 'yarn.lock'
   workflow_dispatch:
 
 jobs:
@@ -29,4 +43,3 @@ jobs:
         run: |
           docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/acdrfactoryimg:latest .
           docker push ${{ secrets.ACR_LOGIN_SERVER }}/acdrfactoryimg:latest
-
