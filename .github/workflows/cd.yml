@@ -21,8 +21,16 @@ jobs:
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      - name: Stop previous deployment 
+        run: |
+          az webapp stop --name AlderFactory --resource-group acdr-factory-rg
+
       - name: Deploy to Azure Web App
         uses: azure/webapps-deploy@v2
         with:
           app-name: AlderFactory
           images: ${{ secrets.ACR_LOGIN_SERVER }}/acdrfactoryimg:latest
+
+      - name: Start new deployment
+        run: |
+          az webapp start --name AlderFactory --resource-group acdr-factory-rg
