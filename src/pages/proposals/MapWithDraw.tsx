@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import L from 'leaflet';
-import 'leaflet-draw';
+import dynamic from 'next/dynamic';
+
+// Importer les styles de Leaflet
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
-import Button from '@/components/ui/button'; // Ensure this import is correct based on your project structure
 
 interface MapWithDrawProps {
   onGeojsonChange: (geojson: string) => void;
@@ -18,27 +18,35 @@ const MapWithDraw: React.FC<MapWithDrawProps> = ({ onGeojsonChange, onSave }) =>
   const [isMapInitialized, setIsMapInitialized] = useState(false);
 
   useEffect(() => {
-    if (mapRef.current && !mapInstanceRef.current) {
+    if (typeof window !== 'undefined' && mapRef.current && !mapInstanceRef.current) {
+      const L = require('leaflet');
+      require('leaflet-draw');
+
+      // Initialize the map
       const map = L.map(mapRef.current).setView([0, 0], 2);
       mapInstanceRef.current = map;
 
+      // Add OpenStreetMap tile layer
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '&copy; OpenStreetMap contributors',
       }).addTo(map);
 
+      // Initialize the FeatureGroup to store editable layers
       const drawnItems = drawnItemsRef.current;
       map.addLayer(drawnItems);
 
+      // Initialize the draw control and pass it the FeatureGroup of editable layers
       const drawControl = new L.Control.Draw({
         edit: {
           featureGroup: drawnItems,
         },
         draw: {
-          polygon: {},
+          polygon: {}, // Enable polygon drawing
         },
       });
       map.addControl(drawControl);
 
+      // Handle created event to get the GeoJSON data
       map.on(L.Draw.Event.CREATED, (event) => {
         const layer = event.layer;
         drawnItems.addLayer(layer);
@@ -46,11 +54,13 @@ const MapWithDraw: React.FC<MapWithDrawProps> = ({ onGeojsonChange, onSave }) =>
         onGeojsonChange(JSON.stringify(geojson));
       });
 
+      // Handle edited event to update the GeoJSON data
       map.on(L.Draw.Event.EDITED, () => {
         const geojson = drawnItems.toGeoJSON();
         onGeojsonChange(JSON.stringify(geojson));
       });
 
+      // Handle deleted event to update the GeoJSON data
       map.on(L.Draw.Event.DELETED, () => {
         const geojson = drawnItems.toGeoJSON();
         onGeojsonChange(JSON.stringify(geojson));
@@ -78,7 +88,7 @@ const MapWithDraw: React.FC<MapWithDrawProps> = ({ onGeojsonChange, onSave }) =>
           }
         },
         () => {
-          console.error('Unable to retrieve location.');
+          console.error("Unable to retrieve location.");
         }
       );
     }
@@ -87,11 +97,9 @@ const MapWithDraw: React.FC<MapWithDrawProps> = ({ onGeojsonChange, onSave }) =>
   return (
     <div>
       <div ref={mapRef} style={{ height: '300px', width: '100%' }} />
-      <Button shape="rounded" onClick={onSave} className="bg-button-green mt-4">
-        Save
-      </Button>
+      <button onClick={onSave} style={{ marginTop: '10px' }}>Save</button>
     </div>
   );
 };
 
-export default MapWithDraw;
+export default dynamic(() => Promise.resolve(MapWithDraw), { ssr: false });
