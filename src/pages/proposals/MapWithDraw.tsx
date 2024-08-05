@@ -95,6 +95,6 @@ const MapWithDraw: React.FC<MapWithDrawProps> = ({ onGeojsonChange, onSave }) =>
   );
 };
 
-export default MapWithDraw;
+
 
 export default dynamic(() => Promise.resolve(MapWithDraw), { ssr: false });
