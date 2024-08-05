@@ -1,4 +1,3 @@
-import dynamic from 'next/dynamic';
 import React, { useEffect, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet-draw';
@@ -95,6 +94,4 @@ const MapWithDraw: React.FC<MapWithDrawProps> = ({ onGeojsonChange, onSave }) =>
   );
 };
 
-
-
-export default dynamic(() => Promise.resolve(MapWithDraw), { ssr: false });
+export default MapWithDraw;
