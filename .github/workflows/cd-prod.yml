@@ -1,0 +1,36 @@
+name: CD ACDR Factory PRD
+
+on:
+  workflow_run:
+    workflows: ["CI ACDR Factory"]
+    types:
+      - completed
+    conclusions:
+      - success
+
+jobs:
+  deploy-to-azure-prd:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Log in to Azure
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+      - name: Stop previous deployment
+        run: |
+          az webapp stop --name AlderFactory-PROD --resource-group acdr-factory-rg
+
+      - name: Deploy to Azure Web App PRD
+        uses: azure/webapps-deploy@v2
+        with:
+          app-name: AlderFactory-PROD
+          images: ${{ secrets.ACR_LOGIN_SERVER }}/acdrfactoryimg:prod-latest
+
+      - name: Start new deployment
+        run: |
+          az webapp start --name AlderFactory-PROD --resource-group acdr-factory-rg
