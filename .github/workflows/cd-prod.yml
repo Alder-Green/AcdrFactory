@@ -23,14 +23,14 @@ jobs:
 
       - name: Stop previous deployment
         run: |
-          az webapp stop --name AlderFactory-PROD --resource-group acdr-factory-rg
+          az webapp stop --name alderfactory --resource-group acdr-factory-rg
 
       - name: Deploy to Azure Web App PRD
         uses: azure/webapps-deploy@v2
         with:
-          app-name: AlderFactory-PROD
+          app-name: alderfactory
           images: ${{ secrets.ACR_LOGIN_SERVER }}/acdrfactoryimg:prod-latest
 
       - name: Start new deployment
         run: |
-          az webapp start --name AlderFactory-PROD --resource-group acdr-factory-rg
+          az webapp start --name alderfactory --resource-group acdr-factory-rg

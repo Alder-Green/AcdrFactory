@@ -23,18 +23,18 @@ jobs:
 
       - name: Stop previous deployment
         run: |
-          az webapp stop --name AlderFactory-DEV --resource-group acdr-factory-rg
+          az webapp stop --name alderfactory-dev --resource-group acdr-factory-rg
 
       - name: Delete previous container
         run: |
-          az container delete --name AlderFactory-DEV --resource-group acdr-factory-rg --yes --no-wait
+          az container delete --name alderfactory-dev --resource-group acdr-factory-rg --yes --no-wait
 
       - name: Deploy to Azure Web App DEV
         uses: azure/webapps-deploy@v2
         with:
-          app-name: AlderFactory-DEV
+          app-name: alderfactory-dev
           images: ${{ secrets.ACR_LOGIN_SERVER }}/acdrfactoryimg:dev-latest
 
       - name: Start new deployment
         run: |
-          az webapp start --name AlderFactory-DEV --resource-group acdr-factory-rg
+          az webapp start --name alderfactory-dev --resource-group acdr-factory-rg
