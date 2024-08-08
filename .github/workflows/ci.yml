@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - dev
     paths:
       - 'src/**'
       - 'public/**'
@@ -41,5 +42,15 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/acdrfactoryimg:latest .
-          docker push ${{ secrets.ACR_LOGIN_SERVER }}/acdrfactoryimg:latest
+          # Déterminer le tag en fonction de la branche
+          if [[ $GITHUB_REF == 'refs/heads/main' ]]; then
+            TAG="prod-latest"
+          elif [[ $GITHUB_REF == 'refs/heads/dev' ]]; then
+            TAG="dev-latest"
+          else
+            TAG="latest"
+          fi
+          
+          
+          docker build -t ${{ secrets.ACR_LOGIN_SERVER }}/acdrfactoryimg:$TAG .
+          docker push ${{ secrets.ACR_LOGIN_SERVER }}/acdrfactoryimg:$TAG
