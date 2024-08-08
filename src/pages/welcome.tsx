@@ -42,7 +42,7 @@ const WelcomePage: NextPageWithLayout = () => {
   return (
     <>
       <NextSeo
-        title="Welcome rania"
+        title="Welcome"
         description="Select your role and connect to the wallet"
       />
       <div className="mx-auto w-full px-4 pt-8 pb-14 sm:px-6 sm:pb-20 sm:pt-12 lg:px-8 xl:px-10 2xl:px-0">
