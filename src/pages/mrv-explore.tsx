@@ -71,8 +71,6 @@ function GridSwitcher() {
 const sort = [
   { id: 1, name: 'Date Listed: Newest' },
   { id: 2, name: 'Date Listed: Oldest' },
-  { id: 3, name: 'Ending: Soonest' },
-  { id: 4, name: 'Ending: Latest' },
 ];
 
 function SortList() {
@@ -189,7 +187,7 @@ function Status() {
                 : 'border-gray-200 bg-white text-brand dark:border-gray-700 dark:bg-gray-800 dark:text-white'
             }`}
           >
-            Buy Now
+            Accepted
           </span>
         )}
       </RadioGroup.Option>
@@ -202,7 +200,7 @@ function Status() {
                 : 'border-gray-200 bg-white text-brand dark:border-gray-700 dark:bg-gray-800 dark:text-white'
             }`}
           >
-            On Auction
+            Rejected 
           </span>
         )}
       </RadioGroup.Option>
@@ -215,20 +213,7 @@ function Status() {
                 : 'border-gray-200 bg-white text-brand dark:border-gray-700 dark:bg-gray-800 dark:text-white'
             }`}
           >
-            New
-          </span>
-        )}
-      </RadioGroup.Option>
-      <RadioGroup.Option value="has-offers">
-        {({ checked }) => (
-          <span
-            className={`flex h-9 cursor-pointer items-center justify-center rounded-lg border border-solid text-center text-sm font-medium uppercase tracking-wide transition-all ${
-              checked
-                ? 'border-brand bg-brand text-white shadow-button'
-                : 'border-gray-200 bg-white text-brand dark:border-gray-700 dark:bg-gray-800 dark:text-white'
-            }`}
-          >
-            Has offers
+            Panding
           </span>
         )}
       </RadioGroup.Option>
@@ -252,9 +237,7 @@ export function DrawerFilters() {
   return (
     <div className="relative w-full max-w-full bg-white dark:bg-dark xs:w-80">
       <div className="flex h-20 items-center justify-between overflow-hidden px-6 py-4">
-        <h2 className="text-xl font-medium uppercase tracking-wider text-gray-900 dark:text-white">
-          Filters
-        </h2>
+        
         <Button
           shape="circle"
           color="white"
@@ -270,9 +253,7 @@ export function DrawerFilters() {
         </div>
       </Scrollbar>
       <div className="absolute left-0 bottom-4 z-10 w-full px-6">
-        <Button fullWidth onClick={closeDrawer}>
-          DONE
-        </Button>
+
       </div>
     </div>
   );

@@ -17,51 +17,15 @@ import { Close } from '@/components/icons/close';
 import AuthorImage from '@/assets/images/author.jpg';
 
 export const menuItems = [
-  {
-    name: 'Welcome',
-    icon: <HomeIcon />,
-    href: routes.welcome,
-  },
- /*  {
-    name: 'Explore NFTs',
-    icon: <CompassIcon />,
-    href: routes.search,
-  },
-  {
-    name: 'Create NFT',
-    icon: <PlusCircle />,
-    href: routes.createNft,
-  },
-  {
-    name: 'NFT Details',
-    icon: <DiskIcon />,
-    href: routes.nftDetails,
-  },
-  {
-    name: 'Profile',
-    icon: <ProfileIcon />,
-    href: routes.profile,
-  }, */
-  {
-    name: 'Create Project',
-    icon: <PlusCircle />,
-    href: routes.createProject,
-  },
-  {
-    name: 'Create MRV',
-    icon: <PlusCircle />,
-    href: routes.createMrv,
-  },
+  
+  
+
   {
     name: 'VVB Profile',
     icon: <ProfileIcon />,
     href: routes.vvbProfile,
   },
-  {
-    name: 'Farmer Profile',
-    icon: <ProfileIcon />,
-    href: routes.farmerProfile,
-  },
+  
   {
     name: 'MRV Explore',
     icon: <CompassIcon />,
@@ -128,7 +92,6 @@ export default function Sidebar({ className }: SidebarProps) {
                 name={item.name}
                 href={item.href}
                 icon={item.icon}
-               /*  dropdownItems={item.dropdownItems} */
               />
             ))}
           </div>

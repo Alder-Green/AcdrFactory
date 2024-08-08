@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import L from 'leaflet';
-import 'leaflet-draw';
+import dynamic from 'next/dynamic';
 
+// Importer les styles de Leaflet
 import 'leaflet/dist/leaflet.css';
 import 'leaflet-draw/dist/leaflet.draw.css';
 
@@ -18,7 +18,10 @@ const MapWithDraw: React.FC<MapWithDrawProps> = ({ onGeojsonChange, onSave }) =>
   const [isMapInitialized, setIsMapInitialized] = useState(false);
 
   useEffect(() => {
-    if (mapRef.current && !mapInstanceRef.current) {
+    if (typeof window !== 'undefined' && mapRef.current && !mapInstanceRef.current) {
+      const L = require('leaflet');
+      require('leaflet-draw');
+
       // Initialize the map
       const map = L.map(mapRef.current).setView([0, 0], 2);
       mapInstanceRef.current = map;
@@ -99,4 +102,4 @@ const MapWithDraw: React.FC<MapWithDrawProps> = ({ onGeojsonChange, onSave }) =>
   );
 };
 
-export default MapWithDraw;
+export default dynamic(() => Promise.resolve(MapWithDraw), { ssr: false });

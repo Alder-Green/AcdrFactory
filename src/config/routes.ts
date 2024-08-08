@@ -27,8 +27,7 @@ const routes = {
   mrvDetails: '/mrv-details',
   projectDetails: '/project-details',
   projectExplore: '/project-explore',
-  welcome: '/welcome',
+  welcome: '/welcome', // Updated WelcomePage route
 };
-
 
 export default routes;

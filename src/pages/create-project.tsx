@@ -1,22 +1,21 @@
-import { useState, useEffect } from 'react';
-import { ethers } from 'ethers';
+import React, { useState, useContext } from 'react';
 import type { NextPageWithLayout } from '@/types';
 import { NextSeo } from 'next-seo';
-import DashboardLayout from '@/layouts/_dashboard';
 import Input from '@/components/ui/forms/input';
 import Textarea from '@/components/ui/forms/textarea';
 import Button from '@/components/ui/button';
 import InputLabel from '@/components/ui/input-label';
 import Uploader from '@/components/ui/forms/uploader';
 import dynamic from 'next/dynamic';
+import { WalletContext } from '@/lib/hooks/use-connect';
 import { addProject } from '../services/services';
+import DashboardLayout from '@/layouts/dashboard';
 
 const MapWithDraw = dynamic(() => import('./proposals/MapWithDraw'), { ssr: false });
 
-const CreateNFTPage: NextPageWithLayout = () => {
+const CreateProjectPage: NextPageWithLayout = () => {
+  const { contract, address } = useContext(WalletContext);
   const [step, setStep] = useState(1);
-  const [owner, setOwner] = useState<string | null>(null);
-  const [projectId, setProjectId] = useState<number>(0); // Add state for project ID
   const [geojsonInputs, setGeojsonInputs] = useState({
     fertilizerApplication: '',
     organicFertilizer: '',
@@ -46,7 +45,7 @@ const CreateNFTPage: NextPageWithLayout = () => {
   const [currentField, setCurrentField] = useState<string | null>(null);
   const [onboardingDate, setOnboardingDate] = useState<string>(() => {
     const today = new Date();
-    return today.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+    return today.toISOString().split('T')[0];
   });
 
   const steps = [
@@ -56,26 +55,6 @@ const CreateNFTPage: NextPageWithLayout = () => {
     { title: 'Land Use Changes' },
     { title: 'Project Finalisation' },
   ];
-
-  useEffect(() => {
-    const fetchWalletAddress = async () => {
-      try {
-        if (window.ethereum) {
-          await window.ethereum.request({ method: 'eth_requestAccounts' });
-          const provider = new ethers.providers.Web3Provider(window.ethereum);
-          const signer = provider.getSigner();
-          const address = await signer.getAddress();
-          setOwner(address);
-        } else {
-          console.error('No Ethereum wallet found');
-        }
-      } catch (error) {
-        console.error('Error fetching wallet address:', error);
-      }
-    };
-
-    fetchWalletAddress();
-  }, []);
 
   const nextStep = () => {
     setStep(step + 1);
@@ -118,7 +97,9 @@ const CreateNFTPage: NextPageWithLayout = () => {
   };
 
   const createProject = async () => {
-    const dateOfSubmission = Math.floor(Date.now() / 1000); // Current timestamp in seconds
+    const projectId = Math.floor(Math.random() * 10000);
+    const owner = address as string;
+    const dateOfSubmission = Math.floor(Date.now() / 1000);
 
     const blob = JSON.stringify({
       projectInfo,
@@ -127,13 +108,8 @@ const CreateNFTPage: NextPageWithLayout = () => {
     });
 
     try {
-      if (!owner) {
-        console.error('Owner address is not set');
-        return;
-      }
-      const tx = await addProject(projectId, owner, dateOfSubmission, blob);
+      const tx = await addProject(contract, projectId, owner, dateOfSubmission, blob);
       console.log('Project created successfully', tx);
-      setProjectId(projectId + 1); // Increment the project ID for the next project
     } catch (error) {
       console.error('Error creating project:', error);
     }
@@ -146,7 +122,6 @@ const CreateNFTPage: NextPageWithLayout = () => {
         <h2 className="mb-6 text-lg font-medium uppercase tracking-wider text-gray-900 dark:text-white sm:mb-10 sm:text-2xl">
           Create New Project
         </h2>
-
         <div className="mb-8">
           <ul className="flex justify-between">
             {steps.map((item, index) => (
@@ -159,7 +134,6 @@ const CreateNFTPage: NextPageWithLayout = () => {
             ))}
           </ul>
         </div>
-
         {step === 1 && (
           <div>
             <h3 className="mb-6 text-lg font-medium text-gray-900 dark:text-white">Project Information</h3>
@@ -203,11 +177,9 @@ const CreateNFTPage: NextPageWithLayout = () => {
             <Button shape="rounded" onClick={nextStep} className="bg-button-green mr-4">Next</Button>
           </div>
         )}
-
         {step === 2 && (
           <div>
             <h3 className="mb-6 text-lg font-medium text-gray-900 dark:text-white">Land Application (Regenerative Activities)</h3>
-            
             <div className="mb-8">
               <InputLabel title="Optimization of fertilizer application (Hectares)" important />
               <Input type="number" name="fertilizerApplication" value={geojsonInputs.fertilizerApplication} onChange={handleInputChange} placeholder="Enter the area where fertilizer application is optimized" className="input-dark" />
@@ -217,31 +189,26 @@ const CreateNFTPage: NextPageWithLayout = () => {
               <Input type="number" name="organicFertilizer" value={geojsonInputs.organicFertilizer} onChange={handleInputChange} placeholder="Enter the area where organic fertilizers are applied" className="input-dark" />
             </div>
             <div className="mb-8">
-            <InputLabel title="Enhanced efficiency nitrogen fertilizers (Hectares)" important />
+              <InputLabel title="Enhanced efficiency nitrogen fertilizers (Hectares)" important />
               <Input type="number" name="nitrogenFertilizers" value={geojsonInputs.nitrogenFertilizers} onChange={handleInputChange} placeholder="Enter the area where enhanced efficiency nitrogen fertilizers are used" className="input-dark" />
             </div>
-            
             <h4 className="mb-4 text-lg font-medium text-gray-900 dark:text-white">Improve Water Management/Irrigation</h4>
             <div className="mb-8">
-              <InputLabel title="Alteration of irrigation (Hectares)" important />
               <Input type="number" name="waterManagement" value={geojsonInputs.waterManagement} onChange={handleInputChange} placeholder="Enter the area where irrigation practices are altered" className="input-dark" />
             </div>
             <div className="mb-8">
               <InputLabel title="Groundwater level management (Hectares)" important />
               <Input type="number" name="groundwaterManagement" value={geojsonInputs.groundwaterManagement} onChange={handleInputChange} placeholder="Enter the area where groundwater level management is implemented" className="input-dark" />
             </div>
-            
             <div className="flex space-x-4">
               <Button shape="rounded" onClick={prevStep} className="bg-button-green">Previous</Button>
               <Button shape="rounded" onClick={nextStep} className="bg-button-green">Next</Button>
             </div>
           </div>
         )}
-
         {step === 3 && (
           <div>
             <h3 className="mb-6 text-lg font-medium text-gray-900 dark:text-white">Fertilizers & Pesticides</h3>
-            
             <h4 className="mb-4 text-lg font-medium text-gray-900 dark:text-white">Urea</h4>
             <div className="mb-8">
               <InputLabel title="Quantity (per hectare)" important />
@@ -255,18 +222,15 @@ const CreateNFTPage: NextPageWithLayout = () => {
               <InputLabel title="Quantity Use (per year)" important />
               <Input type="number" name="ureaQuantityPerYear" value={geojsonInputs.ureaQuantityPerYear} onChange={handleInputChange} placeholder="Enter the total annual quantity of urea used" className="input-dark" />
             </div>
-            
             <div className="flex space-x-4">
               <Button shape="rounded" onClick={prevStep} className="bg-button-green">Previous</Button>
               <Button shape="rounded" onClick={nextStep} className="bg-button-green">Next</Button>
             </div>
           </div>
         )}
-
         {step === 4 && (
           <div>
             <h3 className="mb-6 text-lg font-medium text-gray-900 dark:text-white">Land Use Changes</h3>
-            
             <h4 className="mb-4 text-lg font-medium text-gray-900 dark:text-white">Cover Crops</h4>
             <div className="mb-8">
               <InputLabel title="From no cover crop to seasonal cover crop (Hectares)" important />
@@ -276,23 +240,19 @@ const CreateNFTPage: NextPageWithLayout = () => {
               <InputLabel title="From no cover crop to 50% cover seasonal crop or between rows (Hectares)" important />
               <Input type="number" name="partialCoverCrops" value={geojsonInputs.partialCoverCrops} onChange={handleInputChange} placeholder="Enter the area transitioned to partial cover crop" className="input-dark" />
             </div>
-            
             <div className="flex space-x-4">
               <Button shape="rounded" onClick={prevStep} className="bg-button-green">Previous</Button>
               <Button shape="rounded" onClick={nextStep} className="bg-button-green">Next</Button>
             </div>
           </div>
         )}
-
         {step === 5 && (
           <div>
             <h3 className="mb-6 text-lg font-medium text-gray-900 dark:text-white">Project Finalisation</h3>
-            
             <div className="mb-8">
               <InputLabel title="Project Location" important />
               <Input
                 type="text"
-                name="projectLocation"
                 value={geojsonInputs.projectLocation}
                 placeholder="Enter the project location"
                 onClick={() => toggleMap('projectLocation')}
@@ -312,7 +272,6 @@ const CreateNFTPage: NextPageWithLayout = () => {
                 className="input-dark"
               />
             </div>
-            
             <div className="flex space-x-4">
               <Button shape="rounded" onClick={prevStep} className="bg-button-green">Previous</Button>
               <Button shape="rounded" onClick={createProject} className="bg-button-green">Create Project</Button>
@@ -324,8 +283,8 @@ const CreateNFTPage: NextPageWithLayout = () => {
   );
 };
 
-CreateNFTPage.getLayout = function getLayout(page) {
+CreateProjectPage.getLayout = function getLayout(page) {
   return <DashboardLayout>{page}</DashboardLayout>;
 };
 
-export default CreateNFTPage;
+export default CreateProjectPage;
