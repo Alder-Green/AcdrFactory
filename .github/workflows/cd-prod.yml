@@ -7,6 +7,7 @@ on:
       - completed
     conclusions:
       - success
+  workflow_dispatch:
 
 jobs:
   deploy-to-azure-prd:
