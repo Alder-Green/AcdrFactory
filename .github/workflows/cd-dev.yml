@@ -27,7 +27,7 @@ jobs:
 
       - name: Delete previous container
         run: |
-          az container delete --name alderfactory-dev --resource-group acdr-factory-rg --yes --no-wait
+          az container delete --name alderfactory-dev --resource-group acdr-factory-rg --yes 
 
       - name: Deploy to Azure Web App DEV
         uses: azure/webapps-deploy@v2
