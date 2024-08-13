@@ -31,7 +31,7 @@ jobs:
           DAYS_OLD=30
 
           # Liste des images avec leurs dates de création en utilisant 'az acr manifest list-metadata'
-          images=$(az acr manifest list-metadata  $ACR_NAME --repository $REPOSITORY_NAME --query "[].{Digest: digest, Created: lastUpdateTime}" --output tsv)
+          images=$(az acr manifest list-metadata  $ACR_NAME  $REPOSITORY_NAME --query "[].{Digest: digest, Created: lastUpdateTime}" --output tsv)
 
           # Date actuelle
           current_date=$(date +%s)
