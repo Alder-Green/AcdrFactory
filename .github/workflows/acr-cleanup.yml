@@ -2,7 +2,6 @@ name: ACR Cleanup
 
 on:
   schedule:
-    # Exécuter le nettoyage tous les dimanches à minuit UTC
     - cron: '0 0 * * 0'
   workflow_dispatch:
 
@@ -26,23 +25,20 @@ jobs:
 
       - name: Cleanup Old Images
         run: |
-          # Variables
           ACR_NAME="${{ secrets.ACR_LOGIN_SERVER }}"
           REPOSITORY_NAME="acdrfactoryimg"  
           DAYS_OLD=30
-          # Liste des images avec leurs dates de création
-          images=$(az acr repository show-manifests --name $ACR_NAME --repository $REPOSITORY_NAME --query '[].{Digest: digest, Created: createdTime}' --output tsv)
-          # Date actuelle
-          current_date=$(date +%s)
+          
+          # Liste des images avec leurs dates de création en utilisant 'acr manifest list-metadata'
+          images=$(az acr repository show --name $ACR_NAME --image-metadata --query "[?createdTime < $(date --date="$DAYS_OLD days ago" --utc +%Y-%m-%dT%H:%M:%SZ)].{Digest: digest, Created: createdTime}" --output tsv)
+          
           # Boucle pour parcourir les images
           while IFS=$'\t' read -r digest created; do
-            # Convertir la date de création en timestamp
-            created_date=$(date -d $created +%s)
-            # Calculer l'âge de l'image
-            age=$(( (current_date - created_date) / 86400 ))
-            # Si l'image est plus vieille que le nombre de jours spécifié, la supprimer
-            if [ $age -gt $DAYS_OLD ]; then
+            # Vérification si 'created' n'est pas vide
+            if [ -n "$created" ]; then
               echo "Deleting image $digest (created on $created)"
               az acr repository delete --name $ACR_NAME --repository $REPOSITORY_NAME --manifest $digest --yes
+            else
+              echo "Skipping invalid image entry"
             fi
           done <<< "$images"
