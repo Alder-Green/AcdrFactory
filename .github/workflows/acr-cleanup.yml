@@ -27,24 +27,24 @@ jobs:
         run: |
           # Variables
           ACR_NAME="${{ secrets.ACR_LOGIN_SERVER }}"
-          REPOSITORY_NAME="acdrfactoryimg"  
+          REPOSITORY_NAME="acdrfactoryimg"
           DAYS_OLD=30
-          
+
           # Liste des images avec leurs dates de création en utilisant 'az acr manifest list-metadata'
           images=$(az acr manifest list-metadata --registry $ACR_NAME --repository $REPOSITORY_NAME --query "[].{Digest: digest, Created: lastUpdateTime}" --output tsv)
-          
+
           # Date actuelle
           current_date=$(date +%s)
-          
+
           # Boucle pour parcourir les images
           while IFS=$'\t' read -r digest created; do
             # Convertir la date de création en timestamp
-            created_date=$(date -d $created +%s)
+            created_date=$(date -d "$created" +%s)
             # Calculer l'âge de l'image
             age=$(( (current_date - created_date) / 86400 ))
             # Si l'image est plus vieille que le nombre de jours spécifié, la supprimer
             if [ $age -gt $DAYS_OLD ]; then
               echo "Deleting image $digest (created on $created)"
-              az acr repository delete --name $ACR_NAME --repository $REPOSITORY_NAME --manifest $digest --yes
+              az acr manifest delete --registry $ACR_NAME --repository $REPOSITORY_NAME --manifest $digest --yes
             fi
           done <<< "$images"
