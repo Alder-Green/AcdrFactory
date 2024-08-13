@@ -26,7 +26,7 @@ jobs:
       - name: Cleanup Old Images
         run: |
           # Variables
-          ACR_NAME="${{ secrets.ACR_LOGIN_SERVER }}"
+          ACR_NAME="acdrfactoryreg"
           REPOSITORY_NAME="acdrfactoryimg"
           DAYS_OLD=30
 
