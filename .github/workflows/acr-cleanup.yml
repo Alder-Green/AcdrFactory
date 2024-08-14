@@ -10,6 +10,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Install pass to manage Docker credentials
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y pass gnupg2
+          gpg --batch --gen-key <<EOF
+          Key-Type: default
+          Subkey-Type: default
+          Name-Real: GitHub Actions
+          Expire-Date: 0
+          %no-protection
+          %commit
+          EOF
+          pass init "GitHub Actions"
+
+      - name: Configure Docker to use pass as credentials store
+        run: |
+          mkdir -p ~/.docker
+          echo '{"credsStore": "pass"}' > ~/.docker/config.json
+
       - name: Log in to Azure
         uses: azure/login@v1
         with:
@@ -23,19 +42,19 @@ jobs:
         run: |
           echo ${{ secrets.ACR_PASSWORD }} | docker login ${{ secrets.ACR_LOGIN_SERVER }} -u ${{ secrets.ACR_USERNAME }} --password-stdin
           
-      - name: Cleanup Old Images
+      - name: Clean up old images
         run: |
           # Variables
           ACR_NAME="${{ secrets.ACR_LOGIN_SERVER }}"  
           REPOSITORY_NAME="acdrfactoryimg"
           DAYS_OLD=30
-          # List images with their creation dates using 'az acr repository show-manifests'
-          images=$(az acr repository show-manifests --name $ACR_NAME --repository $REPOSITORY_NAME --query "[].{Digest: digest, Created: timestamp}" --output tsv)
+          # List images with their creation dates using 'az acr manifest list-metadata'
+          images=$(az acr manifest list-metadata --registry $ACR_NAME --repository $REPOSITORY_NAME --query "[].{Digest: digest, Created: lastUpdateTime}" --output tsv)
           # Current date
           current_date=$(date +%s)
-          # Loop through the images
+          # Loop through images
           while IFS=$'\t' read -r digest created; do
-            # Convert the creation date to a timestamp
+            # Convert creation date to timestamp
             created_date=$(date -d "$created" +%s)
             # Calculate the age of the image
             age=$(( (current_date - created_date) / 86400 ))
