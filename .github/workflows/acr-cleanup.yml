@@ -10,10 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Install pass to manage Docker credentials
+      - name: Install pass and docker-credential-pass
         run: |
           sudo apt-get update
-          sudo apt-get install -y pass gnupg2
+          sudo apt-get install -y pass gnupg2 docker-credential-pass
           gpg --batch --gen-key <<EOF
           Key-Type: default
           Subkey-Type: default
@@ -37,11 +37,11 @@ jobs:
       - name: Install Azure CLI
         run: |
           curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
-          
+        
       - name: Log in to Azure Container Registry
         run: |
           echo ${{ secrets.ACR_PASSWORD }} | docker login ${{ secrets.ACR_LOGIN_SERVER }} -u ${{ secrets.ACR_USERNAME }} --password-stdin
-          
+        
       - name: Clean up old images
         run: |
           # Variables
