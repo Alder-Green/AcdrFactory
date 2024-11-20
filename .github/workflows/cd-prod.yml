@@ -14,24 +14,60 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      # Étape pour vérifier le code source
       - name: Checkout code
         uses: actions/checkout@v2
 
+      # Étape pour se connecter à Azure
       - name: Log in to Azure
         uses: azure/login@v1
         with:
           creds: ${{ secrets.AZURE_CREDENTIALS }}
 
+      # Étape pour arrêter le déploiement précédent
       - name: Stop previous deployment
         run: |
           az webapp stop --name alderfactory --resource-group acdr-factory-rg
 
+      # Étape pour supprimer le conteneur précédent 
+      - name: Delete previous container
+        run: |
+          az container delete --name alderfactory --resource-group acdr-factory-rg --yes
+
+      # Étape pour déployer sur Azure Web App PRD
       - name: Deploy to Azure Web App PRD
         uses: azure/webapps-deploy@v2
         with:
           app-name: alderfactory
           images: ${{ secrets.ACR_LOGIN_SERVER }}/acdrfactoryimg:prod-latest
 
+      # Étape pour démarrer le nouveau déploiement
       - name: Start new deployment
         run: |
           az webapp start --name alderfactory --resource-group acdr-factory-rg
+
+      # Étape pour notifier en cas d'échec
+      - name: Notify on failure
+        if: failure()
+        uses: actions/github-script@v3
+        with:
+          script: |
+            github.issues.createComment({
+              issue_number: 1,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Le déploiement a échoué.'
+            })
+
+      # Étape pour notifier en cas de succès
+      - name: Notify on success
+        if: success()
+        uses: actions/github-script@v3
+        with:
+          script: |
+            github.issues.createComment({
+              issue_number: 1,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: 'Le déploiement a réussi.'
+            })
